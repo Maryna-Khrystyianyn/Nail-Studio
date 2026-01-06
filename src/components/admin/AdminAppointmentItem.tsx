@@ -4,6 +4,7 @@ import { confirmBooking } from "@/lib/booking-actions"
 import { useTransition } from "react"
 import Link from "next/link"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function AdminAppointmentItem({ apt }: { apt: any }) {
     const [isPending, startTransition] = useTransition()
 

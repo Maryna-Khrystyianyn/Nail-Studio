@@ -76,9 +76,9 @@ export default async function AdminPage() {
                     <p className="text-sm text-neutral-400">Registrierte Kunden</p>
                 </div>
 
-               
 
-               
+
+
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -104,15 +104,15 @@ export default async function AdminPage() {
                     ) : (
                         <div className="space-y-4">
                             {recentUsers.map((u: any) => (
-                                <div key={u.id} className="flex justify-between items-center border-b border-neutral-800 pb-2 last:border-0">
+                                <Link key={u.id} href={`/admin/users/${u.id}`} className="flex justify-between items-center border-b border-neutral-800 pb-2 last:border-0 hover:bg-[#f7e7ec] group p-1 -m-1  transition-colors">
                                     <div>
-                                        <p className="font-bold text-mauve-700">{u.name}</p>
+                                        <p className="font-bold text-mauve-700 group-hover:text-black transition-colors">{u.name}</p>
                                         <p className="text-sm text-neutral-400">{u.email}</p>
                                     </div>
                                     <div className="w-8 h-8 rounded-full bg-pink-900/50 flex items-center justify-center text-white font-bold">
                                         {u.name?.[0].toUpperCase()}
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     )}
@@ -120,14 +120,14 @@ export default async function AdminPage() {
             </div>
 
             <div className="mt-8">
-                <section className="bg-neutral-900 p-6 rounded-sm shadow-sm border border-neutral-800">
-                    <h3 className="text-xl font-bold mb-4 text-white">Schnellzugriff</h3>
+                <section className="bg-mauve-700/50 p-6 rounded-sm shadow-sm border border-neutral-800">
+                    <h3 className="text-xl font-bold mb-4 text-pink-700">Schnellzugriff</h3>
                     <div className="flex gap-4 flex-wrap">
+                        <Link href="/admin/appointments" className="btn-outline bg-neutral-800 hover:bg-neutral-700">Alle Termine</Link>
                         <Link href="/admin/services" className="btn-outline bg-neutral-800 hover:bg-neutral-700">Leistungen & Preise</Link>
                         <Link href="/admin/gallery" className="btn-outline bg-neutral-800 hover:bg-neutral-700">Galerie</Link>
                         <Link href="/admin/promotions" className="btn-outline bg-neutral-800 hover:bg-neutral-700">Sonderangebote</Link>
                         <Link href="/admin/slideshow" className="btn-outline bg-neutral-800 hover:bg-neutral-700">Slideshow</Link>
-                        <span className="w-px bg-neutral-700 h-auto mx-2"></span>
                         <Link href="/admin/settings/hours" className="btn-outline bg-neutral-800 hover:bg-neutral-700">Öffnungszeiten</Link>
                     </div>
                 </section>

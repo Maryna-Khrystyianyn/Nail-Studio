@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { UploadPhotoForm } from "@/components/admin/UploadPhotoForm"
 import { CancelBookingButton } from "@/components/admin/CancelBookingButton"
+import Link from "next/link"
 
 export default async function AdminAppointmentDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
@@ -60,23 +61,39 @@ export default async function AdminAppointmentDetailsPage({ params }: { params: 
                 {/* User Info */}
                 <section className="bg-neutral-900 p-6 rounded-sm shadow-sm border border-neutral-800">
                     <div className="flex flex-col md:flex-row md:items-center gap-6 mb-6">
-                        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-pink-700 bg-neutral-800 flex items-center justify-center flex-shrink-0">
-                            {appointment.user?.image ? (
-                                <img
-                                    src={appointment.user.image}
-                                    alt="Profilbild"
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <div className="text-pink-500 text-2xl font-bold uppercase">
-                                    {(userInfo.name?.[0] || 'G').toUpperCase()}
+                        {appointment.user ? (
+                            <Link href={`/admin/users/${appointment.user.id}`} className="flex items-center gap-6 hover:bg-neutral-800 p-2 -m-2 rounded transition-colors group">
+                                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-pink-700 bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                                    {appointment.user.image ? (
+                                        <img
+                                            src={appointment.user.image}
+                                            alt="Profilbild"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="text-pink-500 text-2xl font-bold uppercase">
+                                            {(userInfo.name?.[0] || 'U').toUpperCase()}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-bold text-pink-300">Kunde</h2>
-                            <p className="text-neutral-400 text-sm">{appointment.user ? 'Registrierter Benutzer' : 'Gast'}</p>
-                        </div>
+                                <div>
+                                    <h2 className="text-xl font-bold text-pink-300 group-hover:text-pink-100 transition-colors">Kunde</h2>
+                                    <p className="text-neutral-400 text-sm">Registrierter Benutzer</p>
+                                </div>
+                            </Link>
+                        ) : (
+                            <>
+                                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-pink-700 bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                                    <div className="text-pink-500 text-2xl font-bold uppercase">
+                                        {(userInfo.name?.[0] || 'G').toUpperCase()}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 className="text-xl font-bold text-pink-300">Kunde</h2>
+                                    <p className="text-neutral-400 text-sm">Gast</p>
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     <div className="space-y-2 text-neutral-300">

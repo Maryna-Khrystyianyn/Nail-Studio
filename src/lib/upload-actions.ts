@@ -3,9 +3,44 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { writeFile } from "fs/promises"
+import { writeFile, mkdir, unlink } from "fs/promises"
 import { join } from "path"
-import { mkdir } from "fs/promises"
+
+export async function deleteUserPhoto(photoId: string, userId: string) {
+    const session = await auth()
+    if (!session || session.user.role !== 'ADMIN') {
+        return { error: 'Unauthorized' }
+    }
+
+    try {
+        const photo = await prisma.userPhoto.findUnique({
+            where: { id: photoId }
+        })
+
+        if (!photo) return { error: 'Photo not found' }
+
+        // Remove from filesystem
+        const filepath = join(process.cwd(), "public", photo.url)
+        try {
+            await unlink(filepath)
+        } catch (e) {
+            console.error("File deletion error", e)
+            // Continue anyway to delete DB record
+        }
+
+        // Remove from DB
+        await prisma.userPhoto.delete({
+            where: { id: photoId }
+        })
+
+        revalidatePath(`/admin/users/${userId}`)
+        revalidatePath(`/dashboard`)
+        return { success: true }
+    } catch (e) {
+        console.error("Deletion error", e)
+        return { error: 'Failed to delete photo' }
+    }
+}
 
 export async function uploadUserPhoto(formData: FormData) {
     const session = await auth()
