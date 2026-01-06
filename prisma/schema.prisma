@@ -1,0 +1,112 @@
+// Prisma schema for NailDesign application
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  name        String?
+  email       String   @unique
+  password    String
+  role        String   @default("USER") // USER, ADMIN
+  image       String?
+  phoneNumber String?
+  createdAt   DateTime @default(now())
+
+  appointments Appointment[]
+  reviews      Review[]
+  photos       UserPhoto[]
+}
+
+model UserPhoto {
+  id        String   @id @default(cuid())
+  url       String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  date        DateTime
+  service     String
+  status      String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  comments    String?
+
+  // Guest info (if not logged in)
+  guestName   String?
+  guestEmail  String?
+  guestPhone  String?
+
+  // User link
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  text      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model SalonSettings {
+  id           String   @id @default(cuid())
+  openingHours String   // JSON stringified
+  blockedTimes String?  // JSON stringified for manual blocks
+  homePageImage String? // URL for homepage hero image
+}
+
+model Service {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   // Manicure, Pedicure, Other
+  price     String
+  duration  Int      @default(120) // in minutes (Standardized to 2 hours)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  createdAt DateTime @default(now())
+}
+
+model Promotion {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  description String
+  validFrom   DateTime
+  validUntil  DateTime
+  createdAt   DateTime @default(now())
+}
+
+model OpeningHours {
+  id        String   @id @default(cuid())
+  dayOfWeek Int      @unique // 0=Sunday, 1=Monday...
+  isOpen    Boolean  @default(true)
+
+  // Single interval
+  start     String   @default("09:00")
+  end       String   @default("18:00")
+}
+
+model SlideshowImage {
+  id    String @id @default(cuid())
+  url   String
+  order Int    @default(0)
+}

@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-mauve-900: #4a3e47;
+  /* Dark grayish purple from image */
+  --color-mauve-800: #5d4e5b;
+  /* Main dark container color */
+  --color-mauve-700: #7a6a75;
+  --color-dusty-pink: #dfa5b0;
+  /* Background pink */
+  --color-light-pink: #fce7f3;
+  /* Light accent pink */
+  --color-silver-shine: #e5e7eb;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer components {
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Buttons */
+  /* Buttons */
+  .btn-primary {
+    @apply bg-pink-600 text-white hover:bg-pink-700 px-6 py-2 rounded-sm transition-all font-serif tracking-wide shadow-md font-bold cursor-pointer border border-pink-700;
+  }
+
+  .btn-inverse {
+    @apply bg-white text-black hover:bg-gray-200 px-6 py-2 rounded-sm transition-all font-serif tracking-wide shadow-md font-bold cursor-pointer;
+  }
+
+  .btn-outline {
+    @apply border border-neutral-600 text-neutral-300 hover:bg-neutral-800 hover:text-white px-6 py-2 rounded-sm transition-colors font-medium cursor-pointer;
+  }
+
+  .section-container {
+    @apply bg-mauve-800 text-light-pink rounded-sm p-8 shadow-xl;
+  }
+
+  /* Form Elements */
+  .input-field {
+    @apply flex h-10 w-full rounded-sm border border-mauve-700 bg-white/90 text-mauve-900 px-3 py-2 text-sm placeholder:text-mauve-700/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-dusty-pink disabled:cursor-not-allowed disabled:opacity-50;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    @apply bg-dusty-pink text-mauve-900;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif;
+  }
 }
