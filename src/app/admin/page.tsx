@@ -42,6 +42,9 @@ export default async function AdminPage() {
 
     // Fetch recent data
     const recentAppointments = await prisma.appointment.findMany({
+        where: {
+            status: { not: 'CANCELLED' }
+        },
         take: 5,
         orderBy: { createdAt: 'desc' },
         include: { user: true }
@@ -54,44 +57,36 @@ export default async function AdminPage() {
     })
 
     return (
-        <div className="container mx-auto px-4 py-8 bg-black min-h-screen">
+        <div className="container mx-auto px-4 py-8  min-h-screen">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-serif font-bold text-pink-600">Admin Dashboard</h1>
-                <a href="/admin/settings" className="btn-outline text-sm">Profil Einstellungen</a>
+                <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">Admin Dashboard</h1>
+                <a href="/admin/settings" className="btn-outline text-mauve-700 text-sm">Profil Einstellungen</a>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <div className="bg-neutral-900 p-6 rounded-sm shadow-md border-l-4 border-pink-600">
-                    <h3 className="font-bold text-lg mb-2 text-white">Termine</h3>
+                <div className="bg-mauve-700 p-6 rounded-sm shadow-md border-l-4 border-pink-600">
+                    <h3 className="font-bold text-lg mb-2 text-white">Neue Termine</h3>
                     <p className="text-3xl font-bold text-white">{pendingCount}</p>
                     <p className="text-sm text-neutral-400">Ausstehende Anfragen</p>
                 </div>
 
-                <div className="bg-neutral-900 p-6 rounded-sm shadow-md border-l-4 border-pink-600">
+                <div className="bg-mauve-700 p-6 rounded-sm shadow-md border-l-4 border-pink-600">
                     <h3 className="font-bold text-lg mb-2 text-white">Benutzer</h3>
                     <p className="text-3xl font-bold text-white">{userCount}</p>
                     <p className="text-sm text-neutral-400">Registrierte Kunden</p>
                 </div>
 
-                <div className="bg-neutral-900 p-6 rounded-sm shadow-md border-l-4 border-pink-600">
-                    <h3 className="font-bold text-lg mb-2 text-white">Umsatz (Geschätzt)</h3>
-                    <p className="text-3xl font-bold text-white">{revenue} €</p>
-                    <p className="text-sm text-neutral-400">Bestätigte Termine</p>
-                </div>
+               
 
-                <div className="bg-neutral-900 p-6 rounded-sm shadow-md border-l-4 border-pink-600">
-                    <h3 className="font-bold text-lg mb-2 text-white">Startseite</h3>
-                    <p className="text-sm text-neutral-400 mb-2">Hauptbild ändern</p>
-                    <AdminHeroImageForm />
-                </div>
+               
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Recent Appointments */}
-                <section className="bg-neutral-900 p-6 rounded-sm shadow-sm border border-neutral-800">
-                    <h3 className="text-xl font-bold mb-4 text-white">Neueste Termine</h3>
+                <section className=" p-6 rounded-sm shadow-sm border border-neutral-800">
+                    <h3 className="text-xl font-bold mb-4 text-pink-600">Neueste Termine</h3>
                     {recentAppointments.length === 0 ? (
-                        <p className="text-neutral-500">Keine Termine vorhanden.</p>
+                        <p className="text-neutral-700">Keine Termine vorhanden.</p>
                     ) : (
                         <div className="space-y-4">
                             {recentAppointments.map((apt: any) => (
@@ -102,19 +97,19 @@ export default async function AdminPage() {
                 </section>
 
                 {/* Recent Users */}
-                <section className="bg-neutral-900 p-6 rounded-sm shadow-sm border border-neutral-800">
-                    <h3 className="text-xl font-bold mb-4 text-white">Neueste Benutzer</h3>
+                <section className=" p-6 rounded-sm shadow-sm border border-neutral-800">
+                    <h3 className="text-xl font-bold mb-4 text-pink-600">Neueste Benutzer</h3>
                     {recentUsers.length === 0 ? (
-                        <p className="text-neutral-500">Keine Benutzer vorhanden.</p>
+                        <p className="text-neutral-700">Keine Benutzer vorhanden.</p>
                     ) : (
                         <div className="space-y-4">
                             {recentUsers.map((u: any) => (
                                 <div key={u.id} className="flex justify-between items-center border-b border-neutral-800 pb-2 last:border-0">
                                     <div>
-                                        <p className="font-bold text-white">{u.name}</p>
+                                        <p className="font-bold text-mauve-700">{u.name}</p>
                                         <p className="text-sm text-neutral-400">{u.email}</p>
                                     </div>
-                                    <div className="w-8 h-8 rounded-full bg-pink-900/50 flex items-center justify-center text-pink-400 font-bold">
+                                    <div className="w-8 h-8 rounded-full bg-pink-900/50 flex items-center justify-center text-white font-bold">
                                         {u.name?.[0].toUpperCase()}
                                     </div>
                                 </div>

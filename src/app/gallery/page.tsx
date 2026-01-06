@@ -4,10 +4,10 @@ export default async function GalleryPage() {
     const images = await getGalleryImages()
 
     return (
-        <div className="bg-black min-h-screen">
+        <div className=" min-h-screen">
             <div className="container mx-auto px-4 py-16">
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl font-serif font-bold text-white mb-4">Unsere Meisterwerke</h1>
+                    <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">Unsere Meisterwerke</h1>
                     <p className="text-neutral-400 max-w-2xl mx-auto">Entdecken Sie unser Portfolio exquisiter Nageldesigns, von elegantem Minimalismus bis hin zu extravaganter Kunst.</p>
                 </div>
 

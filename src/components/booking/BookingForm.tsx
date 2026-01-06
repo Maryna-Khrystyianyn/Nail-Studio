@@ -80,22 +80,22 @@ export default function BookingForm({ user, services = [] }: { user?: any, servi
             <input type="hidden" name="time" value={time} />
 
             {/* Steps Indicator */}
-            <div className="flex mb-8 justify-between text-sm font-medium text-neutral-500">
-                <span className={step >= 1 ? 'text-pink-500' : ''}>1. Leistung</span>
-                <span className={step >= 2 ? 'text-pink-500' : ''}>2. Datum & Zeit</span>
-                <span className={step >= 3 ? 'text-pink-500' : ''}>3. Details</span>
+            <div className="flex mb-8 bg-mauve-700 p-3  justify-between text-sm font-medium text-mauve">
+                <span className={step >= 1 ? 'text-light-pink' : ''}>1. Leistung</span>
+                <span className={step >= 2 ? 'text-light-pink' : ''}>2. Datum & Zeit</span>
+                <span className={step >= 3 ? 'text-light-pink' : ''}>3. Details</span>
             </div>
 
             {step === 1 && (
                 <div className="space-y-6">
-                    <h3 className="text-xl font-bold mb-4 text-white">Wählen Sie eine Leistung</h3>
+                    <h3 className="text-xl font-bold mb-4 text-mauve-700">Wählen Sie eine Leistung</h3>
 
                     {Object.keys(groupedServices).map(category => (
                         <div key={category} className="mb-6">
-                            <h4 className="text-pink-400 font-bold mb-3 uppercase text-sm tracking-wider">{category === 'Manicure' ? 'Maniküre' : category === 'Pedicure' ? 'Pediküre' : 'Sonstiges'}</h4>
+                            <p className="text-pink-400 font-bold mb-3 uppercase text-xl italic tracking-wider">{category === 'Manicure' ? 'Maniküre' : category === 'Pedicure' ? 'Pediküre' : 'Sonstiges'}</p>
                             <div className="grid grid-cols-1 gap-3">
                                 {groupedServices[category].map((s: any) => (
-                                    <label key={s.id} className={`flex justify-between items-center p-4 border rounded-sm cursor-pointer transition ${selectedService?.id === s.id ? 'border-pink-500 bg-pink-900/20 text-white' : 'border-neutral-700 hover:bg-neutral-800 text-neutral-300'}`}>
+                                    <label key={s.id} className={`flex justify-between items-center p-4 border rounded-sm cursor-pointer transition ${selectedService?.id === s.id ? 'border-pink-500 bg-pink-900/20 font-bold' : 'border-neutral-700 hover:bg-mauve-700 hover:text-white text-mauve-700'}`}>
                                         <div className="flex items-center">
                                             <input
                                                 type="radio"

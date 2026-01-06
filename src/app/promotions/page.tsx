@@ -5,10 +5,10 @@ export default async function PromotionsPage() {
     const promotions = await getActivePromotions()
 
     return (
-        <div className="bg-black min-h-screen">
+        <div className="min-h-screen">
             <div className="container mx-auto px-4 py-16">
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl font-serif font-bold text-white mb-4">Aktuelle Angebote</h1>
+                    <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">Aktuelle Angebote</h1>
                     <p className="text-neutral-400">Verwöhnen Sie sich zum Vorteilspreis mit unseren saisonalen Aktionen.</p>
                 </div>
 
@@ -20,7 +20,7 @@ export default async function PromotionsPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                         {promotions.map((p: any, idx: number) => (
-                            <div key={p.id} className={`p-8 rounded-sm border shadow-xl relative overflow-hidden ${idx % 2 === 0 ? 'bg-gradient-to-br from-neutral-100 to-gray-300 text-black border-white/20' : 'bg-neutral-900 text-white border-neutral-700'}`}>
+                            <div key={p.id} className={`p-8 rounded-sm border shadow-xl relative overflow-hidden ${idx % 2 === 0 ? 'bg-gradient-to-br from-neutral-100 to-gray-300 text-black border-white/20' : 'bg-mauve-900 text-white border-neutral-700'}`}>
                                 {idx % 2 !== 0 && (
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-pink-600/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
                                 )}
@@ -35,7 +35,7 @@ export default async function PromotionsPage() {
                                     Jetzt buchen
                                 </Link>
 
-                                <div className={`text-xs mt-6 opacity-60 ${idx % 2 === 0 ? 'text-neutral-600' : 'text-neutral-500'}`}>
+                                <div className={`text-xs mt-6 opacity-60 ${idx % 2 === 0 ? 'text-neutral-600' : 'text-neutral-400'}`}>
                                     Gültig von {new Date(p.validFrom).toLocaleDateString((['de-DE']))} bis {new Date(p.validUntil).toLocaleDateString(['de-DE'])}
                                 </div>
                             </div>

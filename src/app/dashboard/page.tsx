@@ -18,8 +18,18 @@ export default async function DashboardPage() {
         redirect("/login")
     }
 
+    const now = new Date()
     const appointments = await prisma.appointment.findMany({
-        where: { userId: session.user.id },
+        where: {
+            userId: session.user.id,
+            OR: [
+                { status: { not: 'CANCELLED' } },
+                {
+                    status: 'CANCELLED',
+                    date: { gt: now }
+                }
+            ]
+        },
         orderBy: { date: 'desc' }
     })
 

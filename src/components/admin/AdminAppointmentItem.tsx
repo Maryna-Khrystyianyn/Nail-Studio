@@ -10,9 +10,9 @@ export function AdminAppointmentItem({ apt }: { apt: any }) {
     return (
         <div className="border-b border-neutral-800 pb-2 last:border-0">
             <div className="flex justify-between items-start">
-                <Link href={`/admin/appointments/${apt.id}`} className="hover:bg-neutral-800 block flex-1 group rounded p-1 -m-1 transition-colors">
+                <Link href={`/admin/appointments/${apt.id}`} className="hover:bg-[#f7e7ec] block flex-1 group rounded p-1 -m-1 transition-colors">
                     <div>
-                        <p className="font-bold text-white group-hover:text-pink-300 transition-colors">{apt.service}</p>
+                        <p className="font-bold text-mauve-700 group-hover:text-gray-700 transition-colors">{apt.service}</p>
                         <p className="text-sm text-neutral-400">
                             {apt.guestName || apt.user?.name || 'Unbekannt'}
                             <span className="text-neutral-600"> | </span>

@@ -7,9 +7,9 @@ export default async function BookingPage() {
     const services = await getServices()
 
     return (
-        <div className="min-h-screen py-8 bg-black">
+        <div className="min-h-screen py-8 ">
             <div className="container max-w-lg mx-auto px-4">
-                <h1 className="text-4xl font-serif font-bold text-center mb-12 text-white">Termin Buchen</h1>
+                <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">Termin Buchen</h1>
                 <BookingForm user={session?.user} services={services} />
             </div>
         </div>
