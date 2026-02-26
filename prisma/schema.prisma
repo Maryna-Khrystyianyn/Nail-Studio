@@ -67,6 +67,11 @@ model SalonSettings {
   openingHours String   // JSON stringified
   blockedTimes String?  // JSON stringified for manual blocks
   homePageImage String? // URL for homepage hero image
+  
+  // Contact Info
+  address     String?
+  email       String?
+  phone       String?
 }
 
 model Service {

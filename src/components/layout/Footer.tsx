@@ -1,6 +1,7 @@
 'use client'
 
 import { getOpeningHours } from "@/lib/opening-hours-actions"
+import { getSalonSettings } from "@/lib/settings-actions"
 import { useTranslations, useLocale } from 'next-intl'
 import Link from "next/link"
 import { useEffect, useState } from 'react'
@@ -9,9 +10,13 @@ export function Footer() {
     const t = useTranslations('Footer')
     const locale = useLocale()
     const [hours, setHours] = useState<{ dayOfWeek: number, isOpen: boolean, start: string, end: string }[]>([])
+    const [settings, setSettings] = useState<any>(null)
 
     useEffect(() => {
         getOpeningHours().then(setHours)
+        getSalonSettings().then((res) => {
+            if (res) setSettings(res)
+        })
     }, [])
 
     // Helper to format hours for display
@@ -67,10 +72,9 @@ export function Footer() {
                 </div>
                 <div>
                     <h3 className="text-white font-serif tracking-widest mb-6 border-b border-mauve-700 pb-2 inline-block">{t('contact')}</h3>
-                    <p>Hauptstraße 1</p>
-                    <p>01067 Dresden</p>
-                    <p className="mt-4">info@manikuere-dresden.de</p>
-                    <p>+49 351 1234567</p>
+                    <p>{settings?.address || 'Hauptstraße 1, 01067 Dresden'}</p>
+                    <p className="mt-4">{settings?.email || 'info@manikuere-dresden.de'}</p>
+                    <p>{settings?.phone || '+49 351 1234567'}</p>
                 </div>
                 <div>
                     <h3 className="text-white font-serif tracking-widest mb-6 border-b border-mauve-700 pb-2 inline-block">{t('openingHours')}</h3>
