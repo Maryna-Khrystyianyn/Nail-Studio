@@ -52,6 +52,9 @@ export async function register(prevState: string | undefined, formData: FormData
     }
 }
 
+import { getLocale } from 'next-intl/server'
+import { revalidatePath } from 'next/cache'
+
 export async function authenticate(
     prevState: string | undefined,
     formData: FormData,
@@ -59,8 +62,9 @@ export async function authenticate(
     try {
         await signIn('credentials', {
             ...Object.fromEntries(formData),
-            redirectTo: '/',
+            redirect: false,
         })
+        return 'success'
     } catch (error) {
         if (error instanceof AuthError) {
             switch (error.type) {

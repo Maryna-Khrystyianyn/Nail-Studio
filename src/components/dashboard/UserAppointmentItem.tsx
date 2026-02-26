@@ -2,13 +2,16 @@
 
 import { cancelBooking } from "@/lib/booking-actions"
 import { useTransition, useState } from "react"
+import { useTranslations, useLocale } from 'next-intl'
 
-export function UserAppointmentItem({ apt, statusMap }: { apt: any, statusMap: Record<string, string> }) {
+export function UserAppointmentItem({ apt }: { apt: any }) {
     const [isPending, startTransition] = useTransition()
     const [error, setError] = useState('')
+    const t = useTranslations('Dashboard')
+    const locale = useLocale()
 
     const handleCancel = () => {
-        if (!confirm('Möchten Sie diesen Termin wirklich stornieren?')) return;
+        if (!confirm(t('cancelConfirm'))) return;
 
         setError('')
         startTransition(async () => {
@@ -27,10 +30,10 @@ export function UserAppointmentItem({ apt, statusMap }: { apt: any, statusMap: R
             <div>
                 <p className="font-bold text-white">{apt.service}</p>
                 <div className="text-sm text-neutral-400">
-                    {new Date(apt.date).toLocaleDateString('de-DE')} {new Date(apt.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(apt.date).toLocaleDateString(locale)} {new Date(apt.date).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                     <span className="mx-2 text-neutral-600">|</span>
                     <span className={`${apt.status === 'CONFIRMED' ? 'text-green-500' : apt.status === 'CANCELLED' ? 'text-red-500' : 'text-yellow-500'}`}>
-                        {statusMap[apt.status] || apt.status}
+                        {t(`status.${apt.status}`)}
                     </span>
                 </div>
             </div>
@@ -41,7 +44,7 @@ export function UserAppointmentItem({ apt, statusMap }: { apt: any, statusMap: R
                         onClick={handleCancel}
                         className="text-red-500 hover:text-red-400 text-xs underline disabled:opacity-50"
                     >
-                        {isPending ? 'Stornieren...' : 'Stornieren'}
+                        {isPending ? t('cancelling') : t('cancel')}
                     </button>
                 )}
             </div>

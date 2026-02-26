@@ -1,8 +1,10 @@
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { getServices } from "@/lib/service-actions"
+import { getTranslations } from 'next-intl/server'
 
 export default async function ServicesPage() {
     const services = await getServices()
+    const t = await getTranslations('ServicesPage')
 
     // Group services by category
     const groupedServices = services.reduce((acc: any, s: any) => {
@@ -13,18 +15,17 @@ export default async function ServicesPage() {
 
     // Helper to map DB category to Display Name
     const categoryName = (cat: string) => {
-        if (cat === 'Manicure') return 'Maniküre'
-        if (cat === 'Pedicure') return 'Pediküre'
-        return 'Weitere Leistungen'
+        if (cat === 'Manicure') return t('manicure')
+        if (cat === 'Pedicure') return t('pedicure')
+        return t('other')
     }
 
     return (
         <div className="min-h-screen pb-16">
             <div className="container mx-auto px-4 py-16">
-                <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">Unsere Leistungen</h1>
+                <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">{t('title')}</h1>
                 <p className="text-mauve-700 text-center mb-16 max-w-2xl mx-auto">
-                    Entdecken Sie unser breites Angebot an professionellen Nagelbehandlungen.
-                    Wir verwenden nur hochwertige Produkte für Ihre Schönheit und Gesundheit.
+                    {t('description')}
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
@@ -41,7 +42,6 @@ export default async function ServicesPage() {
                                             <span className="font-bold text-mauve-900 group-hover:text-mauve-700 transition">
                                                 {s.name}
                                             </span>
-                                            {/* Optional duration could go here */}
                                         </div>
                                         <span className="text-mauve-600 font-serif italic relative px-2 bg-white z-10">
                                             {s.price}
@@ -53,7 +53,7 @@ export default async function ServicesPage() {
 
                             <div className="mt-8 pt-6 border-t border-mauve-100 text-center">
                                 <Link href="/booking" className="btn-primary inline-block">
-                                    Jetzt Buchen
+                                    {t('bookNow')}
                                 </Link>
                             </div>
                         </div>

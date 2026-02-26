@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 async function main() {
     const email = 'admin@manikuere-dresden.de'
-    const password = 'adminpassword123'
+    const password = '111111'
     const name = 'Admin User'
 
     const hashedPassword = await bcrypt.hash(password, 10)

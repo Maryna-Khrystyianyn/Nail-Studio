@@ -1,21 +1,25 @@
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { getActivePromotions } from "@/lib/promotion-actions"
+import { getTranslations, getLocale } from 'next-intl/server'
+
 
 export default async function PromotionsPage() {
     const promotions = await getActivePromotions()
+    const t = await getTranslations('PromotionsPage')
+    const locale = await getLocale()
 
     return (
         <div className="min-h-screen">
             <div className="container mx-auto px-4 py-16">
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">Aktuelle Angebote</h1>
-                    <p className="text-neutral-400">Verwöhnen Sie sich zum Vorteilspreis mit unseren saisonalen Aktionen.</p>
+                    <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">{t('title')}</h1>
+                    <p className="text-neutral-400">{t('description')}</p>
                 </div>
 
                 {promotions.length === 0 ? (
                     <div className="text-center py-12 max-w-lg mx-auto bg-neutral-900 rounded border border-neutral-800">
-                        <p className="text-neutral-400 mb-4">Aktuell keine aktiven Sonderangebote.</p>
-                        <p className="text-sm text-neutral-500">Folgen Sie uns oder schauen Sie später wieder vorbei!</p>
+                        <p className="text-neutral-400 mb-4">{t('noOffers')}</p>
+                        <p className="text-sm text-neutral-500">{t('followUs')}</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -26,17 +30,20 @@ export default async function PromotionsPage() {
                                 )}
 
                                 <div className={`uppercase tracking-wide text-sm font-bold mb-2 ${idx % 2 === 0 ? 'text-pink-600' : 'text-pink-400'}`}>
-                                    {p.subtitle || 'Sonderangebot'}
+                                    {p.subtitle || t('specialOffer')}
                                 </div>
                                 <h2 className="text-3xl font-serif font-bold mb-4">{p.title}</h2>
                                 <p className={`mb-6 font-medium ${idx % 2 === 0 ? 'text-neutral-700' : 'text-neutral-300'}`}>{p.description}</p>
 
                                 <Link href="/booking" className={`inline-block px-4 py-2 rounded-sm font-bold transition shadow-lg ${idx % 2 === 0 ? 'btn-primary' : 'bg-white text-black hover:bg-gray-200'}`}>
-                                    Jetzt buchen
+                                    {t('bookNow')}
                                 </Link>
 
                                 <div className={`text-xs mt-6 opacity-60 ${idx % 2 === 0 ? 'text-neutral-600' : 'text-neutral-400'}`}>
-                                    Gültig von {new Date(p.validFrom).toLocaleDateString((['de-DE']))} bis {new Date(p.validUntil).toLocaleDateString(['de-DE'])}
+                                    {t('valid', {
+                                        from: new Date(p.validFrom).toLocaleDateString(locale),
+                                        until: new Date(p.validUntil).toLocaleDateString(locale)
+                                    })}
                                 </div>
                             </div>
                         ))}

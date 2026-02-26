@@ -1,19 +1,21 @@
 import { getGalleryImages } from "@/lib/gallery-actions"
+import { getTranslations } from 'next-intl/server'
 
 export default async function GalleryPage() {
     const images = await getGalleryImages()
+    const t = await getTranslations('GalleryPage')
 
     return (
         <div className=" min-h-screen">
             <div className="container mx-auto px-4 py-16">
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">Unsere Meisterwerke</h1>
-                    <p className="text-neutral-400 max-w-2xl mx-auto">Entdecken Sie unser Portfolio exquisiter Nageldesigns, von elegantem Minimalismus bis hin zu extravaganter Kunst.</p>
+                    <h1 className="text-4xl md:text-5xl font-serif text-mauve-900 text-center mb-4">{t('title')}</h1>
+                    <p className="text-neutral-400 max-w-2xl mx-auto">{t('description')}</p>
                 </div>
 
                 {images.length === 0 ? (
                     <div className="text-center py-16 text-neutral-500">
-                        <p>Die Galerie wird derzeit aktualisiert. Schauen Sie bald wieder vorbei.</p>
+                        <p>{t('updating')}</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -26,7 +28,7 @@ export default async function GalleryPage() {
                                     className="object-cover w-full h-full transition duration-500 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                                 />
                                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center">
-                                    <span className="text-white font-serif italic text-lg border-b border-pink-500 pb-1">{img.alt || 'Details ansehen'}</span>
+                                    <span className="text-white font-serif italic text-lg border-b border-pink-500 pb-1">{img.alt || t('viewDetails')}</span>
                                 </div>
                             </div>
                         ))}

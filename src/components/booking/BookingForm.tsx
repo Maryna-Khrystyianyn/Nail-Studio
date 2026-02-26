@@ -3,26 +3,27 @@
 import { useState, useEffect } from 'react'
 import { useFormStatus } from 'react-dom'
 import { createBooking, getAvailableSlots } from '@/lib/booking-actions'
+import { useTranslations, useLocale } from 'next-intl'
+import { Link } from '@/i18n/routing'
 
 function SubmitButton() {
     const { pending } = useFormStatus()
+    const t = useTranslations('Booking')
     return (
         <button disabled={pending} type="submit" className="btn-primary w-full mt-6">
-            {pending ? 'Wird gebucht...' : 'Termin bestätigen'}
+            {pending ? t('submitting') : t('confirm')}
         </button>
     )
 }
 
 export default function BookingForm({ user, services = [] }: { user?: any, services?: any[] }) {
+    const t = useTranslations('Booking')
+    const locale = useLocale()
     const [step, setStep] = useState(1)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState(false)
 
     // Form State
-    const [serviceId, setServiceId] = useState('')
-    // We store the full service name+price string for display/email logic as before, or refactor to use ID.
-    // For minimal refactor, let's keep 'service' as the string value but look it up.
-    // Actually, let's store the Service Object or constructed string.
     const [selectedService, setSelectedService] = useState<any>(null)
 
     // Derived state for the backend
@@ -59,9 +60,9 @@ export default function BookingForm({ user, services = [] }: { user?: any, servi
     if (success) {
         return (
             <div className="text-center py-12">
-                <h2 className="text-2xl font-bold text-green-500 mb-4">Buchung bestätigt!</h2>
-                <p className="text-neutral-400">Vielen Dank für Ihre Terminvereinbarung.</p>
-                <p className="mt-4"><a href="/dashboard" className="text-pink-500 underline">Zum Dashboard</a></p>
+                <h2 className="text-2xl font-bold text-green-500 mb-4">{t('successTitle')}</h2>
+                <p className="text-neutral-400">{t('successDesc')}</p>
+                <p className="mt-4"><Link href="/dashboard" className="text-pink-500 underline">{t('toDashboard')}</Link></p>
             </div>
         )
     }
@@ -75,24 +76,25 @@ export default function BookingForm({ user, services = [] }: { user?: any, servi
     return (
         <form action={clientAction}>
             {/* Hidden inputs to pass state to server action */}
-            {/* Service is set via formData manipulation above or hidden input */}
             <input type="hidden" name="date" value={date} />
             <input type="hidden" name="time" value={time} />
 
             {/* Steps Indicator */}
             <div className="flex mb-8 bg-mauve-700 p-3  justify-between text-sm font-medium text-mauve">
-                <span className={step >= 1 ? 'text-light-pink' : ''}>1. Leistung</span>
-                <span className={step >= 2 ? 'text-light-pink' : ''}>2. Datum & Zeit</span>
-                <span className={step >= 3 ? 'text-light-pink' : ''}>3. Details</span>
+                <span className={step >= 1 ? 'text-light-pink' : ''}>{t('step1')}</span>
+                <span className={step >= 2 ? 'text-light-pink' : ''}>{t('step2')}</span>
+                <span className={step >= 3 ? 'text-light-pink' : ''}>{t('step3')}</span>
             </div>
 
             {step === 1 && (
                 <div className="space-y-6">
-                    <h3 className="text-xl font-bold mb-4 text-mauve-700">Wählen Sie eine Leistung</h3>
+                    <h3 className="text-xl font-bold mb-4 text-mauve-700">{t('selectService')}</h3>
 
                     {Object.keys(groupedServices).map(category => (
                         <div key={category} className="mb-6">
-                            <p className="text-pink-400 font-bold mb-3 uppercase text-xl italic tracking-wider">{category === 'Manicure' ? 'Maniküre' : category === 'Pedicure' ? 'Pediküre' : 'Sonstiges'}</p>
+                            <p className="text-pink-400 font-bold mb-3 uppercase text-xl italic tracking-wider">
+                                {category === 'Manicure' ? t('manicure') : category === 'Pedicure' ? t('pedicure') : t('other')}
+                            </p>
                             <div className="grid grid-cols-1 gap-3">
                                 {groupedServices[category].map((s: any) => (
                                     <label key={s.id} className={`flex justify-between items-center p-4 border rounded-sm cursor-pointer transition ${selectedService?.id === s.id ? 'border-pink-500 bg-pink-900/20 font-bold' : 'border-neutral-700 hover:bg-mauve-700 hover:text-white text-mauve-700'}`}>
@@ -120,21 +122,21 @@ export default function BookingForm({ user, services = [] }: { user?: any, servi
                         onClick={() => setStep(2)}
                         className="btn-primary w-full mt-4"
                     >
-                        Weiter
+                        {t('next')}
                     </button>
                 </div>
             )}
 
             {step === 2 && (
                 <div className="space-y-6">
-                    <h3 className="text-xl font-bold mb-4 text-white">Datum & Uhrzeit wählen</h3>
+                    <h3 className="text-xl font-bold mb-4 text-white">{t('selectDateTime')}</h3>
                     <div>
-                        <label className="block text-sm font-medium mb-1 text-neutral-400">Datum</label>
+                        <label className="block text-sm font-medium mb-1 text-neutral-400">{t('date')}</label>
                         <input
                             type="date"
                             required
                             min={new Date().toISOString().split('T')[0]}
-                            className="input-field" // Uses our new dark mode input style
+                            className="input-field"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
                         />
@@ -142,11 +144,11 @@ export default function BookingForm({ user, services = [] }: { user?: any, servi
 
                     {date && (
                         <div>
-                            <label className="block text-sm font-medium mb-2 text-neutral-400">Verfügbare Zeiten</label>
+                            <label className="block text-sm font-medium mb-2 text-neutral-400">{t('availableSlots')}</label>
                             {loadingSlots ? (
-                                <p className="text-sm text-neutral-500">Lade Zeiten...</p>
+                                <p className="text-sm text-neutral-500">{t('loadingSlots')}</p>
                             ) : slots.length === 0 ? (
-                                <p className="text-sm text-red-500">Keine Termine an diesem Tag verfügbar.</p>
+                                <p className="text-sm text-red-500">{t('noSlots')}</p>
                             ) : (
                                 <div className="grid grid-cols-3 gap-2">
                                     {slots.map(s => (
@@ -165,14 +167,14 @@ export default function BookingForm({ user, services = [] }: { user?: any, servi
                     )}
 
                     <div className="flex gap-4">
-                        <button type="button" onClick={() => setStep(1)} className="btn-outline w-1/2">Zurück</button>
+                        <button type="button" onClick={() => setStep(1)} className="btn-outline w-1/2">{t('back')}</button>
                         <button
                             type="button"
                             disabled={!date || !time}
                             onClick={() => setStep(3)}
                             className="btn-primary w-1/2"
                         >
-                            Weiter
+                            {t('next')}
                         </button>
                     </div>
                 </div>
@@ -181,40 +183,40 @@ export default function BookingForm({ user, services = [] }: { user?: any, servi
             {step === 3 && (
                 <div className="space-y-6">
                     <div className="bg-neutral-800 p-4 rounded-sm text-sm mb-6 text-neutral-300 border border-neutral-700">
-                        <p><span className="font-bold text-white">Leistung:</span> {serviceName}</p>
-                        <p><span className="font-bold text-white">Wann:</span> {date} um {time}</p>
+                        <p><span className="font-bold text-white">{t('summaryService')}:</span> {serviceName}</p>
+                        <p><span className="font-bold text-white">{t('summaryWhen')}:</span> {new Date(date).toLocaleDateString(locale)} {t('at')} {time}</p>
                     </div>
 
                     {user ? (
                         <div className="mb-4 text-sm text-neutral-400">
-                            Buchung als <span className="font-bold text-white">{user.name}</span> ({user.email})
+                            {t('bookingAs', { name: user.name, email: user.email })}
                         </div>
                     ) : (
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-bold text-neutral-300">Name</label>
-                                <input name="name" type="text" required className="input-field" placeholder="Max Mustermann" />
+                                <label className="block text-sm font-bold text-neutral-300">{t('name')}</label>
+                                <input name="name" type="text" required className="input-field" placeholder={t('namePlaceholder')} />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-neutral-300">Email</label>
-                                <input name="email" type="email" required className="input-field" placeholder="max@beispiel.de" />
+                                <label className="block text-sm font-bold text-neutral-300">{t('email')}</label>
+                                <input name="email" type="email" required className="input-field" placeholder={t('emailPlaceholder')} />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-neutral-300">Telefon</label>
+                                <label className="block text-sm font-bold text-neutral-300">{t('phone')}</label>
                                 <input name="phone" type="tel" required className="input-field" placeholder="+49..." />
                             </div>
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-sm font-bold mb-1 text-neutral-300">Kommentare & Wünsche</label>
-                        <textarea name="comments" className="input-field h-24" placeholder="Besondere Designwünsche oder Allergien?"></textarea>
+                        <label className="block text-sm font-bold mb-1 text-neutral-300">{t('comments')}</label>
+                        <textarea name="comments" className="input-field h-24" placeholder={t('commentsPlaceholder')}></textarea>
                     </div>
 
                     {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
                     <div className="flex gap-4">
-                        <button type="button" onClick={() => setStep(2)} className="btn-outline w-1/2">Zurück</button>
+                        <button type="button" onClick={() => setStep(2)} className="btn-outline w-1/2">{t('back')}</button>
                         <div className="w-1/2">
                             <SubmitButton />
                         </div>
