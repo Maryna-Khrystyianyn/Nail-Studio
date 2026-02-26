@@ -1,10 +1,7 @@
-'use server'
-
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { writeFile, mkdir } from "fs/promises"
-import { join } from "path"
+import { supabase } from "@/lib/supabase"
 import bcrypt from "bcryptjs"
 
 export async function updateProfile(prevState: any, formData: FormData) {
@@ -35,21 +32,23 @@ export async function updateProfile(prevState: any, formData: FormData) {
             const bytes = await avatar.arrayBuffer()
             const buffer = Buffer.from(bytes)
 
-            const relativeUploadDir = `/uploads/avatars`
-            const uploadDir = join(process.cwd(), "public", relativeUploadDir)
-
-            try {
-                await mkdir(uploadDir, { recursive: true })
-            } catch (e) {
-                // Ignore
-            }
-
             const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
             const filename = `${session.user.id}-${uniqueSuffix}-${avatar.name.replace(/[^a-zA-Z0-9.]/g, '')}`
-            const filepath = join(uploadDir, filename)
-            const publicUrl = `${relativeUploadDir}/${filename}`
+            const filepath = `avatars/${filename}`
 
-            await writeFile(filepath, buffer)
+            const { data, error: uploadError } = await supabase.storage
+                .from('uploads')
+                .upload(filepath, buffer, {
+                    contentType: avatar.type,
+                    upsert: true
+                })
+
+            if (uploadError) throw uploadError
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('uploads')
+                .getPublicUrl(filepath)
+
             dataToUpdate.image = publicUrl
         } catch (e) {
             console.error(e)

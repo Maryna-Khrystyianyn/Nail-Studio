@@ -1,10 +1,7 @@
-'use server'
-
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import { writeFile, mkdir, unlink } from 'fs/promises'
-import { join } from 'path'
+import { supabase } from '@/lib/supabase'
 
 // Fetch all slideshow images ordered by `order`
 export async function getSlideshowImages() {
@@ -21,8 +18,6 @@ export async function uploadSlideshowImage(prevState: any, formData: FormData) {
     }
 
     const file = formData.get('image') as File
-    const alt = (formData.get('alt') as string) || ''
-
     if (!file || file.size === 0) {
         return { error: 'No image selected' }
     }
@@ -37,16 +32,22 @@ export async function uploadSlideshowImage(prevState: any, formData: FormData) {
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
 
-        const relativeUploadDir = `/uploads/slideshow`
-        const uploadDir = join(process.cwd(), 'public', relativeUploadDir)
-        await mkdir(uploadDir, { recursive: true })
-
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
         const filename = uniqueSuffix + '-' + file.name.replace(/[^a-zA-Z0-9.]/g, '')
-        const filepath = join(uploadDir, filename)
-        const publicUrl = `${relativeUploadDir}/${filename}`
+        const filepath = `slideshow/${filename}`
 
-        await writeFile(filepath, buffer)
+        const { data, error: uploadError } = await supabase.storage
+            .from('uploads')
+            .upload(filepath, buffer, {
+                contentType: file.type,
+                upsert: true
+            })
+
+        if (uploadError) throw uploadError
+
+        const { data: { publicUrl } } = supabase.storage
+            .from('uploads')
+            .getPublicUrl(filepath)
 
         // Determine order: place at the end
         const maxOrder = await prisma.slideshowImage.aggregate({
@@ -78,13 +79,17 @@ export async function deleteSlideshowImage(id: string) {
         const image = await prisma.slideshowImage.findUnique({ where: { id } })
         if (!image) return { error: 'Image not found' }
 
-        await prisma.slideshowImage.delete({ where: { id } })
+        // Extract path from public URL
+        const path = image.url.split('/uploads/')[1]
 
-        // Delete file from disk
-        try {
-            const filepath = join(process.cwd(), 'public', image.url)
-            await unlink(filepath)
-        } catch (_) { }
+        if (path) {
+            const { error: storageError } = await supabase.storage
+                .from('uploads')
+                .remove([path])
+            if (storageError) console.warn("Could not delete from storage:", storageError)
+        }
+
+        await prisma.slideshowImage.delete({ where: { id } })
 
         // Re‑order remaining images to keep consecutive order values
         const remaining = await prisma.slideshowImage.findMany({

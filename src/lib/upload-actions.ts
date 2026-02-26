@@ -1,10 +1,7 @@
-'use server'
-
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { writeFile, mkdir, unlink } from "fs/promises"
-import { join } from "path"
+import { supabase } from "@/lib/supabase"
 
 export async function deleteUserPhoto(photoId: string, userId: string) {
     const session = await auth()
@@ -19,13 +16,14 @@ export async function deleteUserPhoto(photoId: string, userId: string) {
 
         if (!photo) return { error: 'Photo not found' }
 
-        // Remove from filesystem
-        const filepath = join(process.cwd(), "public", photo.url)
-        try {
-            await unlink(filepath)
-        } catch (e) {
-            console.error("File deletion error", e)
-            // Continue anyway to delete DB record
+        // Remove from storage
+        const path = photo.url.split('/uploads/')[1]
+        
+        if (path) {
+            const { error: storageError } = await supabase.storage
+                .from('uploads')
+                .remove([path])
+            if (storageError) console.warn("Could not delete from storage:", storageError)
         }
 
         // Remove from DB
@@ -55,26 +53,26 @@ export async function uploadUserPhoto(formData: FormData) {
         return { error: 'Missing file or user ID' }
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    // Ensure directory exists
-    const relativeUploadDir = `/uploads/${userId}`
-    const uploadDir = join(process.cwd(), "public", relativeUploadDir)
-
     try {
-        await mkdir(uploadDir, { recursive: true })
-    } catch (e) {
-        // Ignore if exists
-    }
+        const bytes = await file.arrayBuffer()
+        const buffer = Buffer.from(bytes)
 
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    const filename = uniqueSuffix + '-' + file.name.replace(/[^a-zA-Z0-9.]/g, '')
-    const filepath = join(uploadDir, filename)
-    const publicUrl = `${relativeUploadDir}/${filename}`
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        const filename = uniqueSuffix + '-' + file.name.replace(/[^a-zA-Z0-9.]/g, '')
+        const filepath = `${userId}/${filename}`
 
-    try {
-        await writeFile(filepath, buffer)
+        const { data, error: uploadError } = await supabase.storage
+            .from('uploads')
+            .upload(filepath, buffer, {
+                contentType: file.type,
+                upsert: true
+            })
+
+        if (uploadError) throw uploadError
+
+        const { data: { publicUrl } } = supabase.storage
+            .from('uploads')
+            .getPublicUrl(filepath)
 
         await prisma.userPhoto.create({
             data: {
