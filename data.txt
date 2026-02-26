@@ -1,0 +1,8 @@
+Project ID = lfjoansixmrtumwqpaul
+Project URL:
+https://lfjoansixmrtumwqpaul.supabase.co
+
+public API key = sb_publishable_E9EC_JH4dSIczu7RWP4bcA_T2ibXgUL
+DATABASE_URL =postgresql://postgres.lfjoansixmrtumwqpaul:Lubascha@1981@aws-1-eu-central-1.pooler.supabase.com:5432/postgres
+DIRECT_URL = postgresql://postgres:Lubascha@1981@db.lfjoansixmrtumwqpaul.supabase.co:5432/postgres
+YOUR-PASSWORD = Lubascha@1981

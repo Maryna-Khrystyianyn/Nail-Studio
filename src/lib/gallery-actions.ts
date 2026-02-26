@@ -3,8 +3,7 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { writeFile, mkdir, unlink } from "fs/promises"
-import { join } from "path"
+import { supabase } from "@/lib/supabase"
 
 export async function getGalleryImages() {
     return await prisma.galleryImage.findMany({
@@ -29,21 +28,22 @@ export async function uploadGalleryImage(prevState: any, formData: FormData) {
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
 
-        const relativeUploadDir = `/uploads/gallery`
-        const uploadDir = join(process.cwd(), "public", relativeUploadDir)
-
-        try {
-            await mkdir(uploadDir, { recursive: true })
-        } catch (e) {
-            // Ignore
-        }
-
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
         const filename = uniqueSuffix + '-' + file.name.replace(/[^a-zA-Z0-9.]/g, '')
-        const filepath = join(uploadDir, filename)
-        const publicUrl = `${relativeUploadDir}/${filename}`
+        const filepath = `gallery/${filename}`
 
-        await writeFile(filepath, buffer)
+        const { data, error } = await supabase.storage
+            .from('uploads')
+            .upload(filepath, buffer, {
+                contentType: file.type,
+                upsert: true
+            })
+
+        if (error) throw error
+
+        const { data: { publicUrl } } = supabase.storage
+            .from('uploads')
+            .getPublicUrl(filepath)
 
         await prisma.galleryImage.create({
             data: { url: publicUrl, alt }
@@ -65,15 +65,20 @@ export async function deleteGalleryImage(id: string, url: string) {
     }
 
     try {
-        await prisma.galleryImage.delete({ where: { id } })
+        // Extract path from public URL if necessary, but assuming we might need the original path.
+        // For simplicity with Supabase, it's better if the 'url' stored is the public URL.
+        // To delete, we need the path 'gallery/filename.jpg'
+        
+        const path = url.split('/uploads/')[1] // Assuming URL format has /uploads/ bucket name
 
-        // Try to delete file from disk
-        try {
-            const filepath = join(process.cwd(), "public", url)
-            await unlink(filepath)
-        } catch (e) {
-            console.warn("Could not delete file from disk:", e)
+        if (path) {
+            const { error: storageError } = await supabase.storage
+                .from('uploads')
+                .remove([path])
+            if (storageError) console.warn("Could not delete from storage:", storageError)
         }
+
+        await prisma.galleryImage.delete({ where: { id } })
 
         revalidatePath('/admin/gallery')
         revalidatePath('/gallery')
