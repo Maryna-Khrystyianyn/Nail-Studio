@@ -46,7 +46,7 @@ export default async function ServicesPage() {
                                         <span className="text-mauve-600 font-serif italic relative px-2 bg-white z-10">
                                             {s.price}
                                         </span>
-                                        <div className="absolute w-full border-b border-dots border-mauve-200 bottom-1 left-0 -z-0"></div>
+                                        <div className="absolute w-full md:border-b border-dots border-mauve-200 bottom-1 left-0 -z-0"></div>
                                     </li>
                                 ))}
                             </ul>
