@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+https://nail-studio-v4us.vercel.app/
 
-## Getting Started
+# Elegant Nail Studio - Management & Client Platform
 
-First, run the development server:
+A sophisticated, full-stack web application designed for a modern nail design studio. This platform provides a seamless experience for both clients (booking, gallery viewing) and administrators (service management, settings, user control).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Overview
+
+Built with the latest **Next.js 15** and **React 19**, this project focuses on performance, scalability, and a premium user experience. It features complete internationalization (i18n), a robust authentication layer, and a dynamic administrative dashboard.
+
+### Key Features
+
+-   🌐 **Multi-language Support**: Fully localized in English, German, and Ukrainian using `next-intl`.
+-   📅 **Session Booking**: Integrated booking system for client appointments.
+-   🖼️ **Dynamic Gallery**: High-performance gallery to showcase nail design portfolios.
+-   🛠️ **Admin Dashboard**: Comprehensive management interface for services, promotions, and salon settings.
+-   🔐 **Secure Authentication**: Role-based access control implemented via `NextAuth.js`.
+-   📱 **Responsive Design**: Mobile-first approach using **Tailwind CSS 4**.
+-   🗄️ **Database Integrity**: Type-safe database operations with **Prisma ORM**.
+
+---
+
+## 🛠️ Tech Stack
+
+-   **Framework**: [Next.js 15 (App Router)](https://nextjs.org/)
+-   **Language**: [TypeScript](https://www.typescriptlang.org/)
+-   **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+-   **Database**: [Prisma](https://www.prisma.io/) with SQLite/PostgreSQL
+-   **Authentication**: [NextAuth.js v5](https://authjs.dev/)
+-   **Internationalization**: [next-intl](https://next-intl-docs.vercel.app/)
+-   **Form Handling**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+-   **Cloud Storage**: [Supabase](https://supabase.com/) (for media assets)
+-   **Icons**: [Lucide React](https://lucide.dev/)
+
+---
+
+## 📥 Getting Started
+
+### Prerequisites
+
+-   Node.js 20+
+-   npm / yarn / pnpm
+
+### Installation
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/your-username/nail-studio.git
+    cd nail-studio
+    ```
+
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
+3.  **Environment Setup**:
+    Create a `.env` file in the root directory and configure the necessary environment variables:
+    ```env
+    DATABASE_URL="file:./dev.db"
+    NEXTAUTH_SECRET="your-secret-key"
+    SUPABASE_URL="your-supabase-url"
+    SUPABASE_ANON_KEY="your-supabase-key"
+    ```
+
+4.  **Database Migration & Seeding**:
+    ```bash
+    npx prisma migrate dev --name init
+    npm run seed # If a seed script is configured in package.json
+    ```
+
+5.  **Run Development Server**:
+    ```bash
+    npm run dev
+    ```
+
+Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+---
+
+## 📁 Project Structure
+
+```text
+├── messages/          # Internationalization dictionaries (en, de, uk)
+├── prisma/            # Database schema and migrations
+├── public/            # Static assets
+└── src/
+    ├── app/           # Next.js App Router (localized routes)
+    ├── components/    # Reusable UI components
+    ├── lib/           # Utility functions and shared logic
+    ├── providers/     # Context providers (Auth, i18n)
+    └── middleware.ts  # Route protection and i18n middleware
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛡️ Authentication & Security
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The system uses role-based access control. Public routes are accessible to all users, while `/admin` and `/dashboard` paths are protected by middleware and require authenticated sessions with appropriate permissions.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📄 License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Developed with ❤️ for the Beauty Industry.*
